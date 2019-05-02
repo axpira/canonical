@@ -5,8 +5,12 @@ var $ = document.querySelector.bind(document);
 var http = new HttpService();
 
 const resultDiv = $('#resultDiv')
+const addFormElement = $('#addEntityForm')
+const addAttributeFormElement = $('#addAttributeForm')
+const addRelationshipFormElement = $('#addRelationshipForm')
 
 var entidades = new Map();
+var entidadeAtiva = "";
 
 
 function addEntidade(nome, descricao, metaentidade) {
@@ -34,14 +38,14 @@ function addAtributo(entidadeNome, atributo, tipoDado, metadado, descricao) {
     );
 }
 
-function addRelacionamento(entidadeNome, nomeRelacao, entidadeRelacionada) {
+function addRelationship(entidadeNome, nomeRelacao, entidadeRelacionada) {
 	var entidade = entidades.get(entidadeNome);
     if (!entidade) {
-        alert('entidade nao encontrada');
+        alert('entidade nao encontrada [' + entidade + ']');
         return
     }
     if (!entidades.get(entidadeRelacionada)) {
-        alert('entidade relacionada nao encontrada');
+        alert('entidade relacionada nao encontrada [' + entidadeRelacionada + ']');
         return
     }
 	
@@ -55,11 +59,6 @@ function addRelacionamento(entidadeNome, nomeRelacao, entidadeRelacionada) {
 
 
 function initData() {
-    addEntidade(
-        "teste", 
-        "Pessoa que contrata serviços ou adquire seguro.",
-        "pessoa - dados sobre entidade natural ou moral com capacidade para ser sujeito ativo ou passivo de direito"
-    );
     addEntidade(
         "cliente", 
         "Pessoa que contrata serviços ou adquire seguro.",
@@ -84,15 +83,10 @@ function initData() {
 		"nome cliente",
 		"Nome do indivíduo que contrata serviços ou adquire a mercadorias mediante pagamento."
     );
-    addRelacionamento(
+    addRelationship(
         "cliente",
         "possui",
         "pessoa"
-    );
-    addRelacionamento(
-        "cliente",
-        "possui",
-        "teste"
     );
 }
 
@@ -135,12 +129,19 @@ function isPrimitive(arg) {
     typeof arg !== 'function';
 }
 
-function createTable(caption, headers, values) {
+function createTable(caption, headers, values, addFunc) {
+    var div = document.createElement('div');
     var tbl = document.createElement('table');
     tbl.setAttribute('border', '1');
     if (caption) {
         var c = document.createElement('caption');
         c.appendChild(document.createTextNode(caption));
+        if (addFunc) {
+            c.appendChild(createButton('+','btn btn-primary', addFunc));
+        }
+        //c.appendChild(createButton('+','btn btn-primary', function() {
+        //    addAttributeFormElement.classList.remove("hide");
+        //}));
         tbl.appendChild(c);
     }
     var thead = document.createElement('thead');
@@ -173,11 +174,13 @@ function createTable(caption, headers, values) {
 
         tbl.appendChild(tbody); 
     }
+    div.appendChild(tbl);
 
-    return tbl;
+    return div;
 }
 
 function showEntidade(entidadeNome) {
+    entidadeAtiva = entidadeNome;
     var content = "";
     var entidade = entidades.get(entidadeNome);
     if (!entidade) {
@@ -211,7 +214,10 @@ function showEntidade(entidadeNome) {
             createTable(
                 'atributos', 
                 ['atributo','tipo dado','metadado', 'descricao'], 
-                arr
+                arr,
+                function() {
+                    addAttributeFormElement.classList.remove("hide");
+                }
             )
         );
     }
@@ -235,7 +241,10 @@ function showEntidade(entidadeNome) {
             createTable(
                 'relacionamentos', 
                 ['nome relação', 'entidade relacionada', 'descrição' ],
-                arr
+                arr,
+                function() {
+                    addRelationshipFormElement.classList.remove("hide");
+                }
             )
         );
     }
@@ -244,23 +253,97 @@ function showEntidade(entidadeNome) {
     resultDiv.appendChild(div);
 }
 
-function appendButtonEntity(entity) {
+function appendButton(text, f) {
     var container = $("#buttons");
-    container.appendChild( createButton(entity, 'btn btn-primary',
-        function(){ 
-            showEntidade(entity);
-            return false;
-        })
-    );
+    container.appendChild( createButton(text, 'btn btn-primary', f) )
+}
+
+function appendButtonEntity(entity) {
+    appendButton( entity, function(){ 
+        showEntidade(entity);
+        return false;
+    });
 }
 
 function initButtons() {
+    var container = $("#buttons");
+    container.innerHTML = '';
+    appendButton("+", function() {
+        addFormElement.classList.remove("hide");
+    });
     for (var [entidade] of entidades) {
         appendButtonEntity(entidade);
     }
 }
 
+function initAddForm() {
+    $("#addFormBtnCancel").onclick = (event) => {
+        addFormElement.classList.add("hide");
+    };
+    $("#addFormBtnSave").onclick = (event) => {
+        var name = $("#addEntityName").value;
+        var description = $("#addEntityDescription").value;
+        var meta = $("#addEntityMeta").value;
+
+        addEntidade(
+            name, 
+            description,
+            meta
+        );
+        initButtons();
+        addFormElement.classList.add("hide");
+    };
+// document.querySelector('#btnPessoa').onclick = (event) => {
+//     event.preventDefault();
+//     showEntidade('pessoa');
+// }
+}
+
+function initAddAttribute() {
+    $("#addAttributeBtnCancel").onclick = (event) => {
+        addAttributeFormElement.classList.add("hide");
+    };
+    $("#addAttributeBtnSave").onclick = (event) => {
+        var name = $("#addAttributeName").value;
+        var type = $("#addAttributeType").value;
+        var meta = $("#addAttributeMeta").value;
+        var description = $("#addAttributeDescription").value;
+
+	    addAtributo(
+	    	entidadeAtiva,
+	    	name,
+	    	type,
+	    	meta,
+	    	description
+	    );
+        showEntidade(entidadeAtiva);
+
+        addAttributeFormElement.classList.add("hide");
+    };
+}
+
+function initAddRelationship() {
+    $("#addRelationshipBtnCancel").onclick = (event) => {
+        addRelationshipFormElement.classList.add("hide");
+    };
+    $("#addRelationshipBtnSave").onclick = (event) => {
+        var name = $("#addRelationshipName").value;
+        var entity = $("#addRelationshipEntity").value;
+
+	    addRelationship(
+            entidadeAtiva,
+	    	name,
+            entity
+	    );
+        showEntidade(entidadeAtiva);
+
+        addRelationshipFormElement.classList.add("hide");
+    };
+}
 initData();
+initAddForm();
+initAddAttribute();
+initAddRelationship();
 //updateData();
 initButtons();
 showEntidade('cliente');

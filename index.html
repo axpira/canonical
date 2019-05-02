@@ -30,9 +30,75 @@
         </header>
 
         <main>
+            <div id="addEntityForm" class="hide overlay">
+                <div class="container popup">
+                    <div class="form">
+                        <div class="form-group">
+                            <label for="addEntityName">Nome</label>
+                            <input id="addEntityName"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="addEntityDescription">Descricao</label>
+                            <input id="addEntityDescription"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="addEntityMeta">Metaendidade</label>
+                            <textarea id="addEntityMeta"></textarea>
+                        </div>
+                        <div class="form-group-btn">
+                         <button id="addFormBtnSave" class="btn btn-primary">Salvar</button>
+                         <button id="addFormBtnCancel" class="btn btn-primary">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="addAttributeForm" class="overlay hide">
+                <div class="container popup">
+                    <div class="form">
+                        <div class="form-group">
+                            <label for="addAttributeName">Nome</label>
+                            <input id="addAttributeName"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="addAttributeType">Tipo</label>
+                            <input id="addAttributeType"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="addAttributeMeta">Metadado</label>
+                            <input id="addAttributeMeta" />
+                        </div>
+                        <div class="form-group">
+                            <label for="addAttributeDescription">Descrição</label>
+                            <textarea id="addAttributeDescription"></textarea>
+                        </div>
+                        <div class="form-group-btn">
+                         <button id="addAttributeBtnSave" class="btn btn-primary">Salvar</button>
+                         <button id="addAttributeBtnCancel" class="btn btn-primary">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="addRelationshipForm" class="overlay hide">
+                <div class="container popup">
+                    <div class="form">
+                        <div class="form-group">
+                            <label for="addRelationshipName">Nome</label>
+                            <input id="addRelationshipName"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="addRelationshipEntity">Entidade</label>
+                            <input id="addRelationshipEntity"/>
+                        </div>
+                        <div class="form-group-btn">
+                         <button id="addRelationshipBtnSave" class="btn btn-primary">Salvar</button>
+                         <button id="addRelationshipBtnCancel" class="btn btn-primary">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="container">
                 <div class="form">
-                    <div id="buttons" class="form-group">
+                    <div id="buttons" class="form-group-btn">
                         <!--<button id="btnCliente" class="btn btn-primary btnEntity" type="button">cliente</button>-->
                     </div>
                 </div>
